@@ -3,7 +3,8 @@
 {{define "content"}}
 <p>{{index . "message"}}</p>
 <form action="" method="post">
-    <input type="password" name="token" placeholder="API token"/>
+    <input type="password" name="token" placeholder="API token" required/>
     <button type="submit">Authorize</button>
 </form>
 {{end}}
+{{define "script"}}{{end}}
