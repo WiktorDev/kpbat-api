@@ -1,0 +1,9 @@
+{{define "head"}}{{end}}
+
+{{define "content"}}
+<p>{{index . "message"}}</p>
+<form action="" method="post">
+    <input type="password" name="token" placeholder="API token"/>
+    <button type="submit">Authorize</button>
+</form>
+{{end}}

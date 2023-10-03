@@ -10,7 +10,10 @@ import (
 type Config struct {
 	Bind     string         `json:"bind"`
 	Database DatabaseConfig `json:"database"`
+	Token    string         `json:"token"`
 }
+
+var configFile Config
 
 type DatabaseConfig struct {
 	Hostname string `json:"hostname"`
@@ -36,5 +39,10 @@ func LoadConfigFile() Config {
 	if err := json.Unmarshal(byteValue, &config); err != nil {
 		throwError()
 	}
+	configFile = config
 	return config
+}
+
+func GetConfig() Config {
+	return configFile
 }

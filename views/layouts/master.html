@@ -1,0 +1,22 @@
+<!-- /public/views/master.html -->
+<!doctype html>
+
+<html lang="pl">
+<head>
+    <title>{{.title}}</title>
+    {{template "head" .}}
+</head>
+
+<body>
+    {{template "content" .}}
+</body>
+<script>
+    async function runAsync(action) {
+        try {
+            await action()
+        } catch (e) {
+            console.log(e)
+        }
+    }
+</script>
+</html>

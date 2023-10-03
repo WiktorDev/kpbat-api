@@ -1,0 +1,32 @@
+package kpbatApi
+
+import (
+	"errors"
+	"github.com/labstack/echo/v4"
+	"html/template"
+	"io"
+)
+
+type Template struct {
+	templates map[string]*template.Template
+}
+
+func (t Template) Render(writer io.Writer, s string, i interface{}, context echo.Context) error {
+	tmpl, ok := t.templates[s]
+	if !ok {
+		err := errors.New("Template not found -> " + s)
+		return err
+	}
+	return tmpl.ExecuteTemplate(writer, "base.html", i)
+}
+
+func InitTemplates(app *echo.Echo) {
+	templates := make(map[string]*template.Template)
+	templates["index.html"] = template.Must(template.ParseFiles("public/views/index.html", "public/views/base.html"))
+	templates["about.html"] = template.Must(template.ParseFiles("public/views/manage.html", "public/views/base.html"))
+
+	t := &Template{
+		templates: templates,
+	}
+	app.Renderer = t
+}

@@ -1,0 +1,39 @@
+<html>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport"
+          content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Document</title>
+    <style>
+        .container {
+            display: flex;
+        }
+    </style>
+</head>
+<body>
+<div>
+    <h1>Kategorie zdjec</h1>
+    <div id="items"></div>
+</div>
+</body>
+<script>
+    const items = document.getElementById("items")
+
+    runAsync(async() => {
+        const response = await fetch('/v1/gallery/categories')
+        if (!response.ok) {
+            alert(await response.text())
+            return
+        }
+        const data = await response.json()
+        data.forEach(item => {
+            const a = document.createElement('a')
+            a.setAttribute("href", `/v1/panel/manage/${item.id}`)
+            a.append(document.createTextNode(`ID: ${item.id}, ${item.display_name}`))
+            items.appendChild(a)
+            items.appendChild(document.createElement("br"))
+        })
+    })
+</script>
+</html>
