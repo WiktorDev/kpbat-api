@@ -1,0 +1,36 @@
+[
+  {
+    "id":1,
+    "display_name":"Galeria 1",
+    "description":"jakis opis galerii 1",
+    "images": [
+      {
+        "id":1,
+        "category_id":1,
+        "file_name":"42de4416-a973-4420-b3bf-a6c598b59997.png"
+      },
+      {
+        "id":2,
+        "category_id":1,
+        "file_name":"203224e7-adc7-4599-a543-e42db37c45c5.jpg"
+      }
+    ]
+  },
+  {
+    "id":2,
+    "display_name":"Galeria 2",
+    "description":"jakis opis galerii 2",
+    "images": [
+      {
+        "id":1,
+        "category_id":1,
+        "file_name":"42de4416-a973-4420-b3bf-a6c598b59997.png"
+      },
+      {
+        "id":2,
+        "category_id":1,
+        "file_name":"203224e7-adc7-4599-a543-e42db37c45c5.jpg"
+      }
+    ]
+  }
+]

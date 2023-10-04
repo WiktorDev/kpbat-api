@@ -1,7 +1,6 @@
 package routing
 
 import (
-	"fmt"
 	"github.com/labstack/echo/v4"
 	kpbatApi "kpbatApi/api/base"
 	"kpbatApi/api/base/utils"
@@ -27,40 +26,70 @@ func createCategory(ctx echo.Context) error {
 		return err
 	}
 
-	if err := utils.CreateDirectory(bind.ImagesDirectory); err != nil {
-		return utils.HttpError(ctx, http.StatusBadRequest, utils.Message(err.Error()))
+	category := &models.Category{
+		DisplayName: bind.DisplayName,
+		Description: bind.Description,
 	}
 
-	if err := db.Create(&models.Category{
-		DisplayName:     bind.DisplayName,
-		Description:     bind.Description,
-		ImagesDirectory: bind.ImagesDirectory,
-	}).Error; err != nil {
+	if err := db.Create(&category).Error; err != nil {
+		return utils.HttpError(ctx, http.StatusInternalServerError, utils.Message(err.Error()))
+	}
+
+	err := utils.CreateDirectory("category_" + strconv.Itoa(category.ID))
+	if err != nil {
 		return utils.HttpError(ctx, http.StatusInternalServerError, utils.Message(err.Error()))
 	}
 
 	return ctx.NoContent(http.StatusCreated)
 }
 func deleteCategory(ctx echo.Context) error {
-	id, err := strconv.Atoi(ctx.Param("id"))
-	if err != nil {
-		return utils.HttpError(ctx, http.StatusBadRequest, utils.Message("Id param must be string!"))
-	}
-	isExists(id)
+	//id, err := strconv.Atoi(ctx.Param("id"))
+	//if err != nil {
+	//	return utils.HttpError(ctx, http.StatusBadRequest, utils.Message("Id param must be string!"))
+	//}
+	//isExists(id)
 	//db := kpbatApi.DB()
 	//db.Delete(&models.Category{}, id)
 	return ctx.NoContent(http.StatusOK)
 }
-
-func isExists(id int) {
-	db := kpbatApi.DB()
-
-	fmt.Println(db.First(models.Category{}, id))
+func findImages(ctx echo.Context) error {
+	id, err := strconv.Atoi(ctx.Param("id"))
+	if err != nil {
+		return utils.HttpError(ctx, http.StatusBadRequest, utils.Message("Id param must be string!"))
+	}
+	exists, category := findCategory(id)
+	if !exists {
+		return utils.HttpError(ctx, http.StatusNotFound, utils.Message("Category not found!"))
+	}
+	return ctx.JSON(200, category)
 }
 
+func findCategory(id int) (bool, *models.Category) {
+	db := kpbatApi.DB()
+	var user = models.Category{ID: id}
+	err := db.Preload("Images").First(&user).Error
+	if err != nil {
+		return false, nil
+	}
+
+	return true, &user
+}
+func findCategoryContext(ctx echo.Context) (*models.Category, error) {
+	id, err := strconv.Atoi(ctx.Param("id"))
+	if err != nil {
+		return nil, utils.HttpError(ctx, http.StatusBadRequest, utils.Message("Id param must be string!"))
+	}
+	exists, category := findCategory(id)
+
+	if !exists {
+		return nil, utils.HttpError(ctx, http.StatusNotFound, utils.Message("Category not found!"))
+	}
+	return category, nil
+}
 func InitGalleryRouting(v1 *echo.Group) {
 	gallery := v1.Group("/gallery")
 	gallery.GET("/categories", findAllCategories)
+	gallery.GET("/categories/:id", findImages)
 	gallery.POST("/categories", createCategory)
 	gallery.DELETE("/categories/:id", deleteCategory)
 }

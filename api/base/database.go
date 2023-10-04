@@ -16,7 +16,7 @@ func InitDatabase(config DatabaseConfig) *gorm.DB {
 		panic(err)
 	}
 	database = db
-	db.AutoMigrate(&kpbatApi.Category{})
+	db.AutoMigrate(&kpbatApi.Category{}, &kpbatApi.Image{})
 	return db
 }
 

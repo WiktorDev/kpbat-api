@@ -13,12 +13,13 @@ var config = kpbatApi.LoadConfigFile()
 func main() {
 	app := echo.New()
 
+	app.Static("/resources", "resources")
 	gv := goview.New(goview.Config{
 		Root:         "views",                   //template root path
 		Extension:    ".html",                   //file extension
 		Master:       "layouts/master",          //master layout file
 		Partials:     []string{"partials/head"}, //partial files
-		DisableCache: true,                      //if disable cache, auto reload template file for debug.
+		DisableCache: false,                     //if disable cache, auto reload template file for debug.
 	})
 
 	goview.Use(gv)

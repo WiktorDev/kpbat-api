@@ -2,8 +2,17 @@
 
 {{define "content"}}
 <div>
-    <h1>Kategorie zdjec</h1>
+    <h3>Categories</h3>
     <div id="items"></div>
+</div>
+<br>
+<div>
+    <form action="" method="post">
+        <input type="text" name="name" placeholder="Category name" required/>
+        <input type="text" name="description" placeholder="Category description" required/>
+        <input type="text" name="images_directory" placeholder="Directory" required/>
+        <button type="submit">Create category</button>
+    </form>
 </div>
 {{end}}
 {{define "script"}}

@@ -1,0 +1,40 @@
+{{define "head"}}
+<style>
+    img {
+        margin-right: 10px;
+        max-width: 100px;
+    }
+</style>
+{{end}}
+{{define "content"}}
+<h2 id="name"></h2>
+<div id="images"></div>
+<hr>
+<form action="" method="post" enctype="multipart/form-data">
+    Files: <input type="file" name="files" accept="image/png, image/jpeg" multiple><br><br>
+    <button type="submit">Send files</button>
+</form>
+{{end}}
+{{define "script"}}
+<script>
+    const name = document.getElementById('name')
+    const images = document.getElementById('images')
+    const categoryId = {{.categoryId}}
+
+    runAsync(async() => {
+        const response = await fetch(`/v1/gallery/categories/${categoryId}`)
+        if (!response.ok) {
+            alert(await response.text())
+            return
+        }
+        const data = await response.json()
+        name.innerText = data['display_name']
+        data['images'].forEach(image => {
+            const img = document.createElement('img')
+            img.setAttribute('src', `/resources/category_${categoryId}/${image['file_name']}`)
+            img.setAttribute('alt', `Image ${image.id}`)
+            images.append(img)
+        })
+    })
+</script>
+{{end}}
