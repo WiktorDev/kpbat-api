@@ -88,7 +88,7 @@ func uploadImages(ctx echo.Context) error {
 		}
 	}
 
-	return ctx.HTML(http.StatusOK, fmt.Sprintf("<p>Uploaded successfully %d files with fields</p>", len(files)))
+	return ctx.HTML(http.StatusOK, fmt.Sprintf("<p>Uploaded successfully %d files</p>", len(files)))
 }
 
 func InitPanelRouting(v1 *echo.Group) {

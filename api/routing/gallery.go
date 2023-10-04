@@ -43,13 +43,7 @@ func createCategory(ctx echo.Context) error {
 	return ctx.NoContent(http.StatusCreated)
 }
 func deleteCategory(ctx echo.Context) error {
-	//id, err := strconv.Atoi(ctx.Param("id"))
-	//if err != nil {
-	//	return utils.HttpError(ctx, http.StatusBadRequest, utils.Message("Id param must be string!"))
-	//}
-	//isExists(id)
-	//db := kpbatApi.DB()
-	//db.Delete(&models.Category{}, id)
+
 	return ctx.NoContent(http.StatusOK)
 }
 func findImages(ctx echo.Context) error {
