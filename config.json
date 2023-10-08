@@ -7,5 +7,11 @@
     "password": "12345678",
     "database": "kpbat_api"
   },
-  "token": "nzCzBwXefPd4thZdcZnP"
+  "token": "nzCzBwXefPd4thZdcZnP",
+  "mail": {
+    "hostname": "mail1.titanaxe.com",
+    "port": 465,
+    "user": "system@yshop.pl",
+    "password": "65hoSyb29LiGT3UFoFX_"
+  }
 }

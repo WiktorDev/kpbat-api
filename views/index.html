@@ -1,10 +1,71 @@
-{{define "head"}}{{end}}
+{{define "head"}}
+<style>
+    body {
+        font-family: Arial, sans-serif;
+        background-color: #f2f2f2;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        height: 100vh;
+        margin: 0;
+    }
+
+    .token-container {
+        background-color: #fff;
+        border-radius: 5px;
+        box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.2);
+        text-align: center;
+        padding: 30px 30px 20px;
+        width: 300px;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+    }
+    h2 {
+        color: #333;
+        margin: auto 0;
+    }
+    p{
+        color: #af0a0a;
+    }
+    form {
+        width: 90%;
+        display: flex;
+        flex-direction: column;
+        justify-items: center;
+        align-items: center;
+    }
+    input {
+        width: 100%;
+        padding: 10px;
+        border: 1px solid #ccc;
+        border-radius: 3px;
+        font-size: 16px;
+    }
+    button {
+        margin-top: 10px;
+        background-color: #007bff;
+        color: #fff;
+        border: none;
+        border-radius: 3px;
+        font-size: 16px;
+        cursor: pointer;
+        padding: 10px 40px;
+    }
+    button:hover {
+        background-color: #0056b3;
+    }
+</style>
+{{end}}
 
 {{define "content"}}
-<p>{{index . "message"}}</p>
-<form action="" method="post">
-    <input type="password" name="token" placeholder="API token" required/>
-    <button type="submit">Authorize</button>
-</form>
+<div class="token-container">
+    <h2>Please enter auth token</h2>
+    <p>{{index . "message"}}</p>
+    <form action="" method="POST">
+        <input type="password" placeholder="Token" name="token" required>
+        <button type="submit">Authenticate</button>
+    </form>
+</div>
 {{end}}
 {{define "script"}}{{end}}
