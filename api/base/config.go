@@ -14,10 +14,11 @@ type Config struct {
 	Mail     MailConfig     `json:"mail"`
 }
 type MailConfig struct {
-	Hostname string `json:"hostname"`
-	Port     int    `json:"port"`
-	User     string `json:"user"`
-	Password string `json:"password"`
+	Hostname  string `json:"hostname"`
+	Port      int    `json:"port"`
+	User      string `json:"user"`
+	Password  string `json:"password"`
+	AdminMail string `json:"adminMail"`
 }
 type DatabaseConfig struct {
 	Hostname string `json:"hostname"`

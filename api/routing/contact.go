@@ -3,22 +3,48 @@ package routing
 import (
 	"github.com/labstack/echo/v4"
 	kpbatApi "kpbatApi/api/base"
-	http_utils "kpbatApi/api/base/utils"
+	"kpbatApi/api/base/utils"
+	"net/http"
 )
 
+type ContactForm struct {
+	Email       string `json:"email"`
+	PhoneNumber string `json:"phoneNumber"`
+	Subject     string `json:"subject"`
+	Message     string `json:"message"`
+}
+
+func contactFormValidator(bind *ContactForm) utils.Validated {
+	if len(bind.Email) < 6 {
+		return utils.Validated{Message: "email length must be longer than 6 characters"}
+	}
+	if len(bind.Subject) < 12 {
+		return utils.Validated{Message: "subject length must be longer than 12 characters"}
+	}
+	if len(bind.Message) < 20 {
+		return utils.Validated{Message: "message length must be longer than 12 characters"}
+	}
+	return utils.Validated{Ok: true}
+}
+
 func sendMail(ctx echo.Context) error {
-	err := kpbatApi.SendMail("wiktor101a@wp.pl", "testowy", "template.html", struct {
-		Name    string
-		Message string
-	}{
-		Name:    "Test",
-		Message: "wr werw	erreew	erw",
-	})
+	var config = kpbatApi.GetConfig()
+	bind := new(ContactForm)
+	if err := ctx.Bind(bind); err != nil {
+		return utils.HttpError(ctx, http.StatusBadRequest, utils.Message(err.Error()))
+	}
+	err, isValid := utils.Validate(ctx, contactFormValidator(bind))
 	if err != nil {
-		return http_utils.HttpError(ctx, 500, http_utils.Message(err.Error()))
+		return err
+	}
+	if isValid {
+		if err := kpbatApi.SendMail(config.Mail.AdminMail, "New message from "+bind.Email, "template.html", bind); err != nil {
+			return utils.HttpError(ctx, http.StatusInternalServerError, utils.Message(err.Error()))
+		}
 	}
 	return ctx.NoContent(200)
 }
+
 func InitContactRouting(app *echo.Echo) {
-	app.GET("/contact", sendMail)
+	app.POST("/contact", sendMail)
 }

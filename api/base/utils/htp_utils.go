@@ -13,11 +13,11 @@ func Message(text string) interface{} {
 		"message": text,
 	}
 }
-func Validate(ctx echo.Context, validated Validated) error {
+func Validate(ctx echo.Context, validated Validated) (error, bool) {
 	if !validated.Ok {
-		return HttpError(ctx, http.StatusBadRequest, Message(validated.Message))
+		return HttpError(ctx, http.StatusBadRequest, Message(validated.Message)), false
 	}
-	return nil
+	return nil, true
 }
 
 type Validated struct {

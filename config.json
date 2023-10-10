@@ -12,6 +12,7 @@
     "hostname": "mail1.titanaxe.com",
     "port": 465,
     "user": "system@yshop.pl",
-    "password": "65hoSyb29LiGT3UFoFX_"
+    "password": "65hoSyb29LiGT3UFoFX_",
+    "adminMail": "wiktor101a@wp.pl"
   }
 }

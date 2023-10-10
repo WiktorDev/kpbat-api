@@ -85,5 +85,6 @@ func SendMail(to string, subject string, templateName string, data any) error {
 		return err
 	}
 	defer client.Quit()
+	fmt.Println("Email sent!")
 	return nil
 }

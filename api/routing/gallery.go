@@ -22,8 +22,12 @@ func createCategory(ctx echo.Context) error {
 	if err := ctx.Bind(bind); err != nil {
 		return utils.HttpError(ctx, http.StatusInternalServerError, utils.Message(err.Error()))
 	}
-	if err := utils.Validate(ctx, models.CategoryValidator(bind)); err != nil {
+	err, isValid := utils.Validate(ctx, models.CategoryValidator(bind))
+	if err != nil {
 		return err
+	}
+	if !isValid {
+		return ctx.NoContent(http.StatusBadRequest)
 	}
 
 	category := &models.Category{
@@ -34,9 +38,7 @@ func createCategory(ctx echo.Context) error {
 	if err := db.Create(&category).Error; err != nil {
 		return utils.HttpError(ctx, http.StatusInternalServerError, utils.Message(err.Error()))
 	}
-
-	err := utils.CreateDirectory("category_" + strconv.Itoa(category.ID))
-	if err != nil {
+	if err := utils.CreateDirectory("category_" + strconv.Itoa(category.ID)); err != nil {
 		return utils.HttpError(ctx, http.StatusInternalServerError, utils.Message(err.Error()))
 	}
 
