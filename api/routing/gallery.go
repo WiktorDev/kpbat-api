@@ -9,12 +9,31 @@ import (
 	"strconv"
 )
 
+// @Summary	Find all categories
+// @Tags		gallery
+// @Accept		json
+// @Produce	json
+// @Success	200	{object}	models.Category
+// @Router		/gallery/categories [get]
 func findAllCategories(context echo.Context) error {
 	db := kpbatApi.DB()
 	var categories []models.Category
 	db.Find(&categories)
 	return context.JSON(http.StatusOK, categories)
 }
+
+// @Summary	Create new categories
+// @Tags		gallery
+// @Accept		json
+// @Produce	json
+//
+// @Security	ApiKeyAuth
+// @param		Authorization	header	string	true	"Authorization"
+//
+// @Success	201
+// @Failure	400	{object}	utils.MessageStruct
+// @Failure	500	{object}	utils.MessageStruct
+// @Router		/gallery/categories [post]
 func createCategory(ctx echo.Context) error {
 	db := kpbatApi.DB()
 	bind := new(models.Category)
@@ -41,13 +60,30 @@ func createCategory(ctx echo.Context) error {
 	if err := utils.CreateDirectory("category_" + strconv.Itoa(category.ID)); err != nil {
 		return utils.HttpError(ctx, http.StatusInternalServerError, utils.Message(err.Error()))
 	}
-
 	return ctx.NoContent(http.StatusCreated)
 }
-func deleteCategory(ctx echo.Context) error {
 
+// @Summary	Delete category
+// @Tags		gallery
+// @Accept		json
+// @Produce	json
+// @Param		id	path	int	true	"Category ID"
+// @Success	200
+// @Failure	500	{object}	utils.MessageStruct
+// @Router		/gallery/categories/{id} [delete]
+func deleteCategory(ctx echo.Context) error {
 	return ctx.NoContent(http.StatusOK)
 }
+
+// @Summary	Find category by id
+// @Tags		gallery
+// @Accept		json
+// @Produce	json
+// @Param		id	path		int	true	"Category ID"
+// @Success	200	{object}	models.Category
+// @Failure	400	{object}	utils.MessageStruct
+// @Failure	500	{object}	utils.MessageStruct
+// @Router		/gallery/categories/{id} [get]
 func findImages(ctx echo.Context) error {
 	id, err := strconv.Atoi(ctx.Param("id"))
 	if err != nil {
@@ -67,7 +103,6 @@ func findCategory(id int) (bool, *models.Category) {
 	if err != nil {
 		return false, nil
 	}
-
 	return true, &user
 }
 func findCategoryContext(ctx echo.Context) (*models.Category, error) {

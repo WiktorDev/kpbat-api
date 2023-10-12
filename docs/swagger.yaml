@@ -1,0 +1,168 @@
+basePath: /v1
+definitions:
+  models.Category:
+    properties:
+      description:
+        type: string
+      display_name:
+        type: string
+      id:
+        type: integer
+      images:
+        items:
+          $ref: '#/definitions/models.Image'
+        type: array
+    type: object
+  models.Image:
+    properties:
+      category_id:
+        type: integer
+      file_name:
+        type: string
+      id:
+        type: integer
+    type: object
+  routing.ContactForm:
+    properties:
+      email:
+        type: string
+      message:
+        type: string
+      phoneNumber:
+        type: string
+      subject:
+        type: string
+    type: object
+  utils.MessageStruct:
+    properties:
+      message:
+        type: string
+    type: object
+host: api.kpbat.com
+info:
+  contact: {}
+  description: Simple REST API for kpbat.com website
+  license:
+    name: Apache 2.0
+    url: http://www.apache.org/licenses/LICENSE-2.0.html
+  title: Kpbat API
+  version: "1.0"
+paths:
+  /contact:
+    post:
+      consumes:
+      - application/json
+      parameters:
+      - description: body
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/routing.ContactForm'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/utils.MessageStruct'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/utils.MessageStruct'
+      summary: Send message to kpbat.com management
+      tags:
+      - contact
+  /gallery/categories:
+    get:
+      consumes:
+      - application/json
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.Category'
+      summary: Find all categories
+      tags:
+      - gallery
+    post:
+      consumes:
+      - application/json
+      parameters:
+      - description: Authorization
+        in: header
+        name: Authorization
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/utils.MessageStruct'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/utils.MessageStruct'
+      security:
+      - ApiKeyAuth: []
+      summary: Create new categories
+      tags:
+      - gallery
+  /gallery/categories/{id}:
+    delete:
+      consumes:
+      - application/json
+      parameters:
+      - description: Category ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/utils.MessageStruct'
+      summary: Delete category
+      tags:
+      - gallery
+    get:
+      consumes:
+      - application/json
+      parameters:
+      - description: Category ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.Category'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/utils.MessageStruct'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/utils.MessageStruct'
+      summary: Find category by id
+      tags:
+      - gallery
+swagger: "2.0"

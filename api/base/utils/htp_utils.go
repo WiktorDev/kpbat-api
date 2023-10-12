@@ -5,12 +5,16 @@ import (
 	"net/http"
 )
 
+type MessageStruct struct {
+	Message string `json:"message"`
+}
+
 func HttpError(ctx echo.Context, code int, i interface{}) error {
 	return ctx.JSON(code, i)
 }
-func Message(text string) interface{} {
-	return map[string]interface{}{
-		"message": text,
+func Message(text string) MessageStruct {
+	return MessageStruct{
+		Message: text,
 	}
 }
 func Validate(ctx echo.Context, validated Validated) (error, bool) {

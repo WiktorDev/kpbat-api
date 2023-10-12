@@ -27,6 +27,15 @@ func contactFormValidator(bind *ContactForm) utils.Validated {
 	return utils.Validated{Ok: true}
 }
 
+// @Summary	Send message to kpbat.com management
+// @Tags		contact
+// @Accept		json
+// @Produce	json
+// @Param		request	body	routing.ContactForm	true	"body"
+// @Success	200
+// @Failure	400	{object}	utils.MessageStruct
+// @Failure	500	{object}	utils.MessageStruct
+// @Router		/contact [post]
 func sendMail(ctx echo.Context) error {
 	var config = kpbatApi.GetConfig()
 	bind := new(ContactForm)
