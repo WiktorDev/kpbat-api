@@ -4,6 +4,7 @@ import (
 	"github.com/foolin/goview"
 	"github.com/foolin/goview/supports/echoview-v4"
 	"github.com/labstack/echo/v4"
+	"github.com/labstack/echo/v4/middleware"
 	echoSwagger "github.com/swaggo/echo-swagger"
 	kpbatApi "kpbatApi/api/base"
 	"kpbatApi/api/routing"
@@ -25,6 +26,12 @@ func main() {
 	app := echo.New()
 	app.GET("/swagger/*", echoSwagger.WrapHandler)
 	app.Static("/resources", "resources")
+
+	app.Use(middleware.CORSWithConfig(middleware.CORSConfig{
+		AllowOrigins: []string{"*"},
+		AllowHeaders: []string{echo.HeaderOrigin, echo.HeaderContentType, echo.HeaderAccept},
+	}))
+
 	gv := goview.New(goview.Config{
 		Root:         "views",                   //template root path
 		Extension:    ".html",                   //file extension
