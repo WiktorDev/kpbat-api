@@ -1,0 +1,18 @@
+{
+  "bind": ":8080",
+  "database": {
+    "hostname": "localhost",
+    "port": 3306,
+    "username": "root",
+    "password": "12345678",
+    "database": "kpbat_api"
+  },
+  "token": "nzCzBwXefPd4thZdcZnP",
+  "mail": {
+    "hostname": "",
+    "port": 465,
+    "user": "",
+    "password": "",
+    "adminMail": ""
+  }
+}
