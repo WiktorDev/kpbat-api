@@ -38,7 +38,7 @@ const docTemplate = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/routing.ContactForm"
+                            "$ref": "#/definitions/models.ContactForm"
                         }
                     }
                 ],
@@ -145,6 +145,26 @@ const docTemplate = `{
                     "items": {
                         "$ref": "#/definitions/models.Image"
                     }
+                },
+                "primary_image": {
+                    "type": "string"
+                }
+            }
+        },
+        "models.ContactForm": {
+            "type": "object",
+            "properties": {
+                "email": {
+                    "type": "string"
+                },
+                "message": {
+                    "type": "string"
+                },
+                "phoneNumber": {
+                    "type": "string"
+                },
+                "subject": {
+                    "type": "string"
                 }
             }
         },
@@ -159,23 +179,6 @@ const docTemplate = `{
                 },
                 "id": {
                     "type": "integer"
-                }
-            }
-        },
-        "routing.ContactForm": {
-            "type": "object",
-            "properties": {
-                "email": {
-                    "type": "string"
-                },
-                "message": {
-                    "type": "string"
-                },
-                "phoneNumber": {
-                    "type": "string"
-                },
-                "subject": {
-                    "type": "string"
                 }
             }
         },

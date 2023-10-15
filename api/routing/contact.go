@@ -4,7 +4,7 @@ import (
 	"github.com/labstack/echo/v4"
 	kpbatApi "kpbatApi/api/base"
 	"kpbatApi/api/base/utils"
-	"kpbatApi/api/models/dto"
+	"kpbatApi/api/models"
 	"net/http"
 )
 
@@ -12,18 +12,19 @@ import (
 // @Tags		contact
 // @Accept		json
 // @Produce	json
-// @Param		request	body	routing.ContactForm	true	"body"
+// @Param		request	body	models.ContactForm	true	"body"
 // @Success	200
 // @Failure	400	{object}	utils.MessageStruct
 // @Failure	500	{object}	utils.MessageStruct
 // @Router		/contact [post]
 func sendMail(ctx echo.Context) error {
 	var config = kpbatApi.GetConfig()
-	bind := new(dto.ContactForm)
+	bind := new(models.ContactForm)
 	if err := ctx.Bind(bind); err != nil {
 		return utils.HttpError(ctx, http.StatusBadRequest, utils.Message(err.Error()))
 	}
-	err, isValid := utils.Validate(ctx, dto.ContactFormValidator(bind))
+
+	err, isValid := utils.Validate(ctx, models.ContactFormValidator(bind))
 	if err != nil {
 		return err
 	}
