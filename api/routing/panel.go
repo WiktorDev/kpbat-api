@@ -17,27 +17,41 @@ import (
 	"strconv"
 )
 
+func view(template string, title string, context echo.Context, data echo.Map) error {
+	if data == nil {
+		data = echo.Map{}
+	}
+	data["title"] = title
+	return context.Render(http.StatusOK, template, data)
+}
+
 func renderIndex(context echo.Context) error {
-	return context.Render(http.StatusOK, "index", echo.Map{
-		"title": "Authorization",
-	})
+	return view("index", "Authorization", context, nil)
 }
 func authorize(context echo.Context) error {
 	var token = context.FormValue("token")
 	var config = kpbatApi.GetConfig()
 	if token != config.Token {
-		return context.Render(http.StatusOK, "index", map[string]interface{}{
+		return view("index", "Authorization", context, echo.Map{
 			"message": "Invalid token!",
-			"title":   "Authorization",
 		})
 	}
 	kpbatApi.SaveCookie(context, kpbatApi.BuildCookie("token", token))
 	return context.Redirect(http.StatusMovedPermanently, "panel/manage")
 }
 func renderManage(context echo.Context) error {
-	return context.Render(http.StatusOK, "manage", echo.Map{
-		"title": "Gallery | Categories",
-	})
+	return view("manage", "Gallery | Categories", context, nil)
+}
+func removeCategory(ctx echo.Context) error {
+	db := kpbatApi.DB()
+	id, err := strconv.Atoi(ctx.Param("id"))
+	if err != nil {
+		return utils.HttpError(ctx, http.StatusBadRequest, utils.Message("Id param must be integer!"))
+	}
+	_, category := services.FindCategory(id)
+	db.Delete(&category)
+	utils.RemoveDir(fmt.Sprintf("category_%d", id))
+	return ctx.Redirect(http.StatusMovedPermanently, "/v1/panel/manage")
 }
 func createCategory(ctx echo.Context) error {
 	db := kpbatApi.DB()
@@ -47,8 +61,7 @@ func createCategory(ctx echo.Context) error {
 	}
 	validated := models.CategoryValidator(&bind)
 	if !validated.Ok {
-		return ctx.Render(http.StatusBadRequest, "manage", echo.Map{
-			"title":   "Gallery | Categories",
+		return view("manage", "Gallery | Categories", ctx, echo.Map{
 			"message": validated.Message,
 		})
 	}
@@ -58,16 +71,14 @@ func createCategory(ctx echo.Context) error {
 	if err := utils.CreateDirectory("category_" + strconv.Itoa(bind.ID)); err != nil {
 		return utils.HttpError(ctx, http.StatusInternalServerError, utils.Message(err.Error()))
 	}
-	return ctx.Render(http.StatusCreated, "manage", echo.Map{
-		"title": "Gallery | Categories",
-	})
+	return view("manage", "Gallery | Categories", ctx, nil)
 }
 func renderManageCategory(ctx echo.Context) error {
-	return ctx.Render(http.StatusOK, "images", echo.Map{
-		"title":      "Gallery | Images",
+	return view("images", "Gallery | Images", ctx, echo.Map{
 		"categoryId": ctx.Param("id"),
 	})
 }
+
 func uploadImages(ctx echo.Context) error {
 	db := kpbatApi.DB()
 
@@ -114,6 +125,18 @@ func uploadImages(ctx echo.Context) error {
 
 	return ctx.HTML(http.StatusOK, fmt.Sprintf("<p>Uploaded successfully %d files</p>", len(files)))
 }
+func removeImage(ctx echo.Context) error {
+	id, err := strconv.Atoi(ctx.Param("id"))
+	if err != nil {
+		return utils.HttpError(ctx, http.StatusBadRequest, utils.Message("Id param must be integer!"))
+	}
+	state := utils.RemoveImage(id, ctx.QueryParam("image"))
+	if state {
+		services.RemoveImage(ctx.QueryParam("image"))
+		return ctx.NoContent(http.StatusOK)
+	}
+	return ctx.NoContent(http.StatusNotFound)
+}
 
 func InitPanelRouting(v1 *echo.Group) {
 	var config = kpbatApi.GetConfig()
@@ -131,6 +154,8 @@ func InitPanelRouting(v1 *echo.Group) {
 	panel.POST("", authorize)
 	panel.GET("/manage", renderManage)
 	panel.POST("/manage", createCategory)
+	panel.GET("/manage/:id/remove", removeCategory)
 	panel.GET("/manage/:id", renderManageCategory)
 	panel.POST("/manage/:id", uploadImages)
+	panel.DELETE("/manage/:id", removeImage)
 }

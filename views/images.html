@@ -1,40 +1,65 @@
 {{define "head"}}
 <style>
-    img {
-        margin-right: 10px;
-        max-width: 100px;
-    }
+  img {
+    margin-right: 10px;
+    max-width: 100px;
+    cursor: pointer;
+  }
+  h3 {
+    color: #af0a0a;
+    text-decoration: underline;
+  }
 </style>
 {{end}}
 {{define "content"}}
 <h2 id="name"></h2>
-<div id="images"></div>
+<button id="delete_category">Delete category</button>
+<div id="images">
+  <h3>Click image to remove it</h3>
+</div>
 <hr>
 <form action="" method="post" enctype="multipart/form-data">
-    Files: <input type="file" name="files" accept="image/png, image/jpeg" multiple><br><br>
-    <button type="submit">Send files</button>
+  Files: <input type="file" name="files" accept="image/png, image/jpeg" multiple><br><br>
+  <button type="submit">Send files</button>
 </form>
 {{end}}
 {{define "script"}}
 <script>
-    const name = document.getElementById('name')
-    const images = document.getElementById('images')
-    const categoryId = {{.categoryId}}
+  const deleteButton = document.getElementById("delete_category")
+  const name = document.getElementById('name')
+  const images = document.getElementById('images')
+  const categoryId = {{.categoryId}}
 
-    runAsync(async() => {
-        const response = await fetch(`/v1/gallery/categories/${categoryId}`)
-        if (!response.ok) {
-            alert(await response.text())
-            return
+  runAsync(async() => {
+    const response = await fetch(`/v1/gallery/categories/${categoryId}`)
+    if (!response.ok) {
+      alert(await response.text())
+      return
+    }
+    const data = await response.json()
+    name.innerText = data['display_name']
+    data['images'].forEach(image => {
+      const img = document.createElement('img')
+      img.setAttribute('src', `/resources/category_${categoryId}/${image['file_name']}`)
+      img.setAttribute('alt', `Image ${image.id}`)
+      img.addEventListener('click', async () => {
+        if (confirm("Are you sure you want to delete this photo?")) {
+            await removeImage(image['file_name'])
         }
-        const data = await response.json()
-        name.innerText = data['display_name']
-        data['images'].forEach(image => {
-            const img = document.createElement('img')
-            img.setAttribute('src', `/resources/category_${categoryId}/${image['file_name']}`)
-            img.setAttribute('alt', `Image ${image.id}`)
-            images.append(img)
-        })
+      })
+      images.append(img)
     })
+  })
+  async function removeImage(id) {
+      await fetch(`/v1/panel/manage/${categoryId}?image=${id}`, {
+          method: "delete"
+      })
+      window.location.reload()
+  }
+  deleteButton.addEventListener("click", async() => {
+      if (confirm("Are you sure you want to delete this category?")) {
+          window.location.replace(`/v1/panel/manage/${categoryId}/remove`)
+      }
+  })
 </script>
 {{end}}

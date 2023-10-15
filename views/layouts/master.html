@@ -1,23 +1,19 @@
-<!-- /public/views/master.html -->
-<!doctype html>
-
 <html lang="pl">
-<head>
+  <head>
     <title>{{.title}}</title>
     {{template "head" .}}
-</head>
-
-<body>
+  </head>
+  <body>
     {{template "content" .}}
-</body>
-<script>
+  </body>
+  <script>
     async function runAsync(action) {
-        try {
-            await action()
-        } catch (e) {
-            console.log(e)
-        }
+      try {
+        await action()
+      } catch (e) {
+        console.log(e)
+      }
     }
-</script>
-{{template "script" .}}
+  </script>
+  {{template "script" .}}
 </html>

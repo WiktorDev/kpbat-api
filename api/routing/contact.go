@@ -4,28 +4,9 @@ import (
 	"github.com/labstack/echo/v4"
 	kpbatApi "kpbatApi/api/base"
 	"kpbatApi/api/base/utils"
+	"kpbatApi/api/models/dto"
 	"net/http"
 )
-
-type ContactForm struct {
-	Email       string `json:"email"`
-	PhoneNumber string `json:"phoneNumber"`
-	Subject     string `json:"subject"`
-	Message     string `json:"message"`
-}
-
-func contactFormValidator(bind *ContactForm) utils.Validated {
-	if len(bind.Email) < 6 {
-		return utils.Validated{Message: "email length must be longer than 6 characters"}
-	}
-	if len(bind.Subject) < 12 {
-		return utils.Validated{Message: "subject length must be longer than 12 characters"}
-	}
-	if len(bind.Message) < 20 {
-		return utils.Validated{Message: "message length must be longer than 12 characters"}
-	}
-	return utils.Validated{Ok: true}
-}
 
 // @Summary	Send message to kpbat.com management
 // @Tags		contact
@@ -38,11 +19,11 @@ func contactFormValidator(bind *ContactForm) utils.Validated {
 // @Router		/contact [post]
 func sendMail(ctx echo.Context) error {
 	var config = kpbatApi.GetConfig()
-	bind := new(ContactForm)
+	bind := new(dto.ContactForm)
 	if err := ctx.Bind(bind); err != nil {
 		return utils.HttpError(ctx, http.StatusBadRequest, utils.Message(err.Error()))
 	}
-	err, isValid := utils.Validate(ctx, contactFormValidator(bind))
+	err, isValid := utils.Validate(ctx, dto.ContactFormValidator(bind))
 	if err != nil {
 		return err
 	}
