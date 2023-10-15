@@ -9,6 +9,7 @@ import (
 	kpbatApi "kpbatApi/api/base"
 	"kpbatApi/api/base/utils"
 	"kpbatApi/api/models"
+	"kpbatApi/api/services"
 	"net/http"
 	"os"
 	"path/filepath"
@@ -38,6 +39,29 @@ func renderManage(context echo.Context) error {
 		"title": "Gallery | Categories",
 	})
 }
+func createCategory(ctx echo.Context) error {
+	db := kpbatApi.DB()
+	bind := models.Category{
+		DisplayName: ctx.FormValue("name"),
+		Description: ctx.FormValue("description"),
+	}
+	validated := models.CategoryValidator(&bind)
+	if !validated.Ok {
+		return ctx.Render(http.StatusBadRequest, "manage", echo.Map{
+			"title":   "Gallery | Categories",
+			"message": validated.Message,
+		})
+	}
+	if err := db.Create(&bind).Error; err != nil {
+		return utils.HttpError(ctx, http.StatusInternalServerError, utils.Message(err.Error()))
+	}
+	if err := utils.CreateDirectory("category_" + strconv.Itoa(bind.ID)); err != nil {
+		return utils.HttpError(ctx, http.StatusInternalServerError, utils.Message(err.Error()))
+	}
+	return ctx.Render(http.StatusCreated, "manage", echo.Map{
+		"title": "Gallery | Categories",
+	})
+}
 func renderManageCategory(ctx echo.Context) error {
 	return ctx.Render(http.StatusOK, "images", echo.Map{
 		"title":      "Gallery | Images",
@@ -47,7 +71,7 @@ func renderManageCategory(ctx echo.Context) error {
 func uploadImages(ctx echo.Context) error {
 	db := kpbatApi.DB()
 
-	category, categoryErr := findCategoryContext(ctx)
+	category, categoryErr := services.ExtractCategory(ctx)
 	if categoryErr != nil {
 		return categoryErr
 	}
@@ -106,6 +130,7 @@ func InitPanelRouting(v1 *echo.Group) {
 	panel.GET("", renderIndex)
 	panel.POST("", authorize)
 	panel.GET("/manage", renderManage)
+	panel.POST("/manage", createCategory)
 	panel.GET("/manage/:id", renderManageCategory)
 	panel.POST("/manage/:id", uploadImages)
 }

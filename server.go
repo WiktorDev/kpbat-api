@@ -13,15 +13,14 @@ import (
 
 var config = kpbatApi.LoadConfigFile()
 
-//	@title			Kpbat API
-//	@version		1.0
-//	@description	Simple REST API for kpbat.com website
-
-//	@license.name	Apache 2.0
-//	@license.url	http://www.apache.org/licenses/LICENSE-2.0.html
-
-// @host		api.kpbat.com
-// @BasePath	/v1
+// @title			Kpbat API
+// @version		1.0
+// @description	Simple REST API for kpbat.com website
+// @license.name	Apache 2.0
+// @license.url	http://www.apache.org/licenses/LICENSE-2.0.html
+//
+// @host			api.kpbat.com
+// @BasePath		/v1
 func main() {
 	app := echo.New()
 	app.GET("/swagger/*", echoSwagger.WrapHandler)

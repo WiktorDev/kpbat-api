@@ -2,36 +2,37 @@
 
 {{define "content"}}
 <div>
-    <h3>Categories</h3>
-    <div id="items"></div>
+  <h3>Categories</h3>
+  <div id="items"></div>
 </div>
 <br>
 <div>
-    <form action="" method="post">
-        <input type="text" name="name" placeholder="Category name" required/>
-        <input type="text" name="description" placeholder="Category description" required/>
-        <button type="submit">Create category</button>
-    </form>
+  <p>{{index . "message"}}</p>
+  <form action="" method="post">
+    <input type="text" name="name" placeholder="Category name"/>
+    <textarea name="description" placeholder="Category description"></textarea>
+    <button type="submit">Create category</button>
+  </form>
 </div>
 {{end}}
 {{define "script"}}
 <script>
-    const items = document.getElementById("items")
+  const items = document.getElementById("items")
 
-    runAsync(async() => {
-        const response = await fetch('/v1/gallery/categories')
-        if (!response.ok) {
-            alert(await response.text())
-            return
-        }
-        const data = await response.json()
-        data.forEach(item => {
-            const a = document.createElement('a')
-            a.setAttribute("href", `/v1/panel/manage/${item.id}`)
-            a.append(document.createTextNode(`ID: ${item.id}, ${item.display_name}`))
-            items.appendChild(a)
-            items.appendChild(document.createElement("br"))
-        })
+  runAsync(async() => {
+    const response = await fetch('/v1/gallery/categories')
+    if (!response.ok) {
+        alert(await response.text())
+        return
+    }
+    const data = await response.json()
+    data.forEach(item => {
+      const a = document.createElement('a')
+      a.setAttribute("href", `/v1/panel/manage/${item.id}`)
+      a.append(document.createTextNode(`ID: ${item.id}, ${item.display_name}`))
+      items.appendChild(a)
+      items.appendChild(document.createElement("br"))
     })
+  })
 </script>
 {{end}}
