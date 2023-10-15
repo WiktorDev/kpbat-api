@@ -3,10 +3,11 @@ package models
 import http_utils "kpbatApi/api/base/utils"
 
 type Category struct {
-	ID          int     `gorm:"primaryKey" json:"id"`
-	DisplayName string  `json:"display_name"`
-	Description string  `json:"description"`
-	Images      []Image `json:"images"`
+	ID           int     `gorm:"primaryKey" json:"id"`
+	DisplayName  string  `json:"display_name"`
+	Description  string  `json:"description"`
+	PrimaryImage string  `json:"primary_image"`
+	Images       []Image `json:"images"`
 }
 
 func (Category) TableName() string {

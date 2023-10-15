@@ -9,13 +9,17 @@
     color: #af0a0a;
     text-decoration: underline;
   }
+  .primary {
+      padding: 10px;
+      border: 5px solid green;
+  }
 </style>
 {{end}}
 {{define "content"}}
 <h2 id="name"></h2>
 <button id="delete_category">Delete category</button>
 <div id="images">
-  <h3>Click image to remove it</h3>
+  <h3>Click image to remove it or shift and click to set primary</h3>
 </div>
 <hr>
 <form action="" method="post" enctype="multipart/form-data">
@@ -42,7 +46,14 @@
       const img = document.createElement('img')
       img.setAttribute('src', `/resources/category_${categoryId}/${image['file_name']}`)
       img.setAttribute('alt', `Image ${image.id}`)
+      if (image['file_name'] === data['primary_image']) {
+        img.classList.add("primary")
+      }
       img.addEventListener('click', async () => {
+        if (event.shiftKey) {
+            window.location.replace(`/v1/panel/manage/${categoryId}/primary?image=${image['file_name']}`)
+            return
+        }
         if (confirm("Are you sure you want to delete this photo?")) {
             await removeImage(image['file_name'])
         }

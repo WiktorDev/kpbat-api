@@ -122,8 +122,21 @@ func uploadImages(ctx echo.Context) error {
 			return utils.HttpError(ctx, http.StatusInternalServerError, utils.Message(err.Error()))
 		}
 	}
-
 	return ctx.HTML(http.StatusOK, fmt.Sprintf("<p>Uploaded successfully %d files</p>", len(files)))
+}
+func setPrimaryImage(ctx echo.Context) error {
+	db := kpbatApi.DB()
+	id, err := strconv.Atoi(ctx.Param("id"))
+	if err != nil {
+		return utils.HttpError(ctx, http.StatusBadRequest, utils.Message("Id param must be integer!"))
+	}
+	exists, category := services.FindCategory(id)
+	if !exists {
+		return utils.HttpError(ctx, http.StatusNotFound, utils.Message("Category not found!"))
+	}
+	category.PrimaryImage = ctx.QueryParam("image")
+	db.Save(&category)
+	return ctx.Redirect(http.StatusMovedPermanently, fmt.Sprintf("/v1/panel/manage/%d", id))
 }
 func removeImage(ctx echo.Context) error {
 	id, err := strconv.Atoi(ctx.Param("id"))
@@ -158,4 +171,5 @@ func InitPanelRouting(v1 *echo.Group) {
 	panel.GET("/manage/:id", renderManageCategory)
 	panel.POST("/manage/:id", uploadImages)
 	panel.DELETE("/manage/:id", removeImage)
+	panel.GET("/manage/:id/primary", setPrimaryImage)
 }
