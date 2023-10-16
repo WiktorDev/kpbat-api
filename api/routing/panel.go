@@ -49,7 +49,7 @@ func removeCategory(ctx echo.Context) error {
 		return utils.HttpError(ctx, http.StatusBadRequest, utils.Message("Id param must be integer!"))
 	}
 	_, category := services.FindCategory(id)
-	db.Delete(&category)
+	db.Delete(&category).Association("Images").Clear()
 	utils.RemoveDir(fmt.Sprintf("category_%d", id))
 	return ctx.Redirect(http.StatusMovedPermanently, "/v1/panel/manage")
 }
