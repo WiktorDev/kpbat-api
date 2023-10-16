@@ -3,6 +3,7 @@ package utils
 import (
 	"fmt"
 	"os"
+	"strings"
 )
 
 func CreateDirectory(name string) error {
@@ -17,5 +18,5 @@ func RemoveImage(categoryId int, image string) bool {
 	return true
 }
 func RemoveDir(dir string) {
-	os.Remove(fmt.Sprintf("resources/%s", dir))
+	os.Remove(fmt.Sprintf("resources/%s", strings.ToLower(dir)))
 }
