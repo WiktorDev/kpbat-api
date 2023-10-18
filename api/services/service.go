@@ -30,17 +30,3 @@ func FindCategory(id int) (bool, *models.Category) {
 	}
 	return true, &user
 }
-func FindImage(name string) (bool, *models.Image) {
-	db := kpbatApi.DB()
-	var image = models.Image{FileName: name}
-	err := db.First(&image).Error
-	if err != nil {
-		return false, nil
-	}
-	return true, &image
-}
-func RemoveImage(name string) {
-	db := kpbatApi.DB()
-	_, image := FindImage(name)
-	db.Delete(&image)
-}
