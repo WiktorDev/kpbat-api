@@ -48,10 +48,8 @@ func removeCategory(ctx echo.Context) error {
 	if err != nil {
 		return utils.HttpError(ctx, http.StatusBadRequest, utils.Message("Id param must be integer!"))
 	}
-	_, category := services.FindCategory(id)
-	if err := db.Delete(&category).Association("Images").Clear(); err != nil {
-		fmt.Println(err)
-	}
+	db.Exec("DELETE FROM `images`")
+	db.Delete(models.Category{ID: id})
 	utils.RemoveDir(fmt.Sprintf("category_%d", id))
 	return ctx.Redirect(http.StatusMovedPermanently, "/v1/panel/manage")
 }
@@ -141,13 +139,15 @@ func setPrimaryImage(ctx echo.Context) error {
 	return ctx.Redirect(http.StatusMovedPermanently, fmt.Sprintf("/v1/panel/manage/%d", id))
 }
 func removeImage(ctx echo.Context) error {
+	db := kpbatApi.DB()
 	id, err := strconv.Atoi(ctx.Param("id"))
 	if err != nil {
 		return utils.HttpError(ctx, http.StatusBadRequest, utils.Message("Id param must be integer!"))
 	}
-	state := utils.RemoveImage(id, ctx.QueryParam("image"))
-	if state {
-		services.RemoveImage(ctx.QueryParam("image"))
+	var image = ctx.QueryParam("image")
+	if err := db.Where("file_name = ?", image).Delete(&models.Image{}).Error; err != nil {
+		fmt.Println(err)
+	} else if utils.RemoveImage(id, image) {
 		return ctx.NoContent(http.StatusOK)
 	}
 	return ctx.NoContent(http.StatusNotFound)
