@@ -29,7 +29,7 @@ func sendMail(ctx echo.Context) error {
 		return err
 	}
 	if isValid {
-		if err := kpbatApi.SendMail(config.Mail.AdminMail, "New message from "+bind.Email, "template.html", bind); err != nil {
+		if err := kpbatApi.SendMail(config.Mail.AdminMail, "New message from "+bind.Email, "template_to_system.html", bind); err != nil {
 			return utils.HttpError(ctx, http.StatusInternalServerError, utils.Message(err.Error()))
 		}
 	}
