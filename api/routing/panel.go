@@ -5,14 +5,12 @@ import (
 	"github.com/google/uuid"
 	"github.com/labstack/echo/v4"
 	"github.com/labstack/echo/v4/middleware"
-	"io"
+	"github.com/nickalie/go-webpbin"
 	kpbatApi "kpbatApi/api/base"
 	"kpbatApi/api/base/utils"
 	"kpbatApi/api/models"
 	"kpbatApi/api/services"
 	"net/http"
-	"os"
-	"path/filepath"
 	"slices"
 	"strconv"
 )
@@ -105,16 +103,29 @@ func uploadImages(ctx echo.Context) error {
 		}
 		defer src.Close()
 
-		newFileName := uuid.New().String() + filepath.Ext(file.Filename)
-		dst, err := os.Create("resources/category_" + strconv.Itoa(category.ID) + "/" + newFileName)
-		if err != nil {
-			return err
-		}
-		defer dst.Close()
+		newFileName := uuid.New().String() + ".webp"
+		//newFileName := uuid.New().String() + filepath.Ext(file.Filename)
+		//dst, err := os.Create("resources/category_" + strconv.Itoa(category.ID) + "/" + newFileName)
+		//if err != nil {
+		//	return err
+		//}
+		//defer dst.Close()
 
-		if _, err = io.Copy(dst, src); err != nil {
-			return err
+		/**
+		Zapis zdjec
+		*/
+		//if _, err = io.Copy(dst, src); err != nil {
+		//	return err
+		//}
+
+		if err := webpbin.NewCWebP().
+			Quality(80).
+			Input(src).
+			OutputFile(fmt.Sprintf("resources/category_%d/%s", category.ID, newFileName)).
+			Run(); err != nil {
+			fmt.Println(err.Error())
 		}
+
 		if err := db.Create(&models.Image{
 			CategoryID: category.ID,
 			FileName:   newFileName,
