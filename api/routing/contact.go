@@ -19,15 +19,11 @@ import (
 // @Router		/contact [post]
 func sendMail(ctx echo.Context) error {
 	var config = kpbatApi.GetConfig()
-	bind := models.ContactForm{
-		FirstName:   ctx.FormValue("first_name"),
-		LastName:    ctx.FormValue("last_name"),
-		Email:       ctx.FormValue("email"),
-		PhoneNumber: ctx.FormValue("phone_number"),
-		Subject:     ctx.FormValue("subject"),
-		Message:     ctx.FormValue("message"),
+	bind := new(models.ContactForm)
+	if err := (&echo.DefaultBinder{}).BindBody(ctx, bind); err != nil {
+		return utils.HttpError(ctx, http.StatusInternalServerError, utils.Message(err.Error()))
 	}
-	err, isValid := utils.Validate(ctx, models.ContactFormValidator(&bind))
+	err, isValid := utils.Validate(ctx, models.ContactFormValidator(bind))
 	if err != nil {
 		return err
 	}
